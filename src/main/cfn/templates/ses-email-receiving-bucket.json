@@ -1,0 +1,66 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Destination bucket for emails received by SES",
+  "Resources": {
+    "bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Status": "Enabled",
+              "ExpirationInDays": 14
+            }
+          ]
+        }
+      }
+    },
+    "bucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "bucket"
+        },
+        "PolicyDocument": {
+          "Statement": {
+            "Sid": "GiveSESPermissionToWriteEmail",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "ses.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Resource": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:s3:::",
+                  {
+                    "Ref": "bucket"
+                  },
+                  "/*"
+                ]
+              ]
+            },
+            "Condition": {
+              "StringEquals": {
+                "aws:Referer": {
+                  "Ref": "AWS::AccountId"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "bucketName": {
+      "Value": { "Ref": "bucket" },
+      "Description": "Name of the bucket where SES delivers mail to"
+    }
+  }
+}

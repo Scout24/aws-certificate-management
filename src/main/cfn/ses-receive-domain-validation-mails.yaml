@@ -1,0 +1,6 @@
+region: eu-west-1
+stacks:
+  ses-dns-recordset:
+    template-url: templates/recordset.json
+  email-bucket:
+    template-url: templates/ses-email-receiving-bucket.json
