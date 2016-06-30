@@ -18,6 +18,8 @@ default_task = ["clean", "analyze", "publish"]
 def set_properties(project):
     project.depends_on("awscli")
     project.depends_on("cfn-sphere")
+    project.depends_on("boto3")
+    project.build_depends_on("dnspython")
     project.build_depends_on("unittest2")
 
     project.set_property('integrationtest_inherit_environment', True)
