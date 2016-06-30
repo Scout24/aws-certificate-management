@@ -8,6 +8,7 @@ use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin('copy_resources')
 use_plugin("filter_resources")
+use_plugin('python.integrationtest')
 
 name = "aws-certificate-management"
 default_task = ["clean", "analyze", "publish"]
@@ -15,7 +16,15 @@ default_task = ["clean", "analyze", "publish"]
 
 @init
 def set_properties(project):
-    pass
+    project.depends_on("awscli")
+    project.depends_on("cfn-sphere")
+    project.build_depends_on("unittest2")
+
+    project.set_property('integrationtest_inherit_environment', True)
+    project.set_property('integrationtest_always_verbose', True)
+
+    # FIXME
+    project.set_property("coverage_break_build", False)
 
 
 @init(environments='teamcity')
