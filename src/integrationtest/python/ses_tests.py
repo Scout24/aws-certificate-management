@@ -57,7 +57,7 @@ class SESTests(unittest2.TestCase):
         cls.s3_client.delete_bucket(Bucket=cls.s3_bucket)
 
     def setUp(self):
-        # Calls to "aws ses set-active-receipt-rule-set..." are thottled to
+        # Calls to "aws ses set-active-receipt-rule-set..." are throttled to
         # one per second.
         time.sleep(1)
 
