@@ -21,6 +21,7 @@ def set_properties(project):
     project.depends_on("boto3")
     project.build_depends_on("dnspython")
     project.build_depends_on("unittest2")
+    project.build_depends_on("boto3")
 
     project.set_property('integrationtest_inherit_environment', True)
     project.set_property('integrationtest_always_verbose', True)
