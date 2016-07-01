@@ -5,8 +5,14 @@ import logging
 import subprocess
 import time
 
+REGION = "--region=eu-west-1"
+
 
 def run(command):
+    # On clean build systems, the "aws ...." commands fail because no default
+    # region is configured. We need to explicitly name it in every command.
+    command.append(REGION)
+
     logging.debug("Running this command: %r", command)
     subprocess.check_call(command)
 
@@ -16,7 +22,8 @@ def get_active_rule_set():
     # Avoid throttling
     time.sleep(1)
     currently_active_rule_set = subprocess.check_output([
-        'aws ses describe-active-receipt-rule-set'], shell=True)
+        'aws ses describe-active-receipt-rule-set ' + REGION],
+        shell=True)
     if not currently_active_rule_set:
         return
     return json.loads(currently_active_rule_set)['Metadata']['Name']
