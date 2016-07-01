@@ -4,13 +4,15 @@ import boto3
 import json
 import random
 import subprocess
+import sys
 import time
 import unittest2
 
 from aws_certificate_management.ses import (
         delete_rule_set, generate_rule, create_rule_set, get_active_rule_set)
 
-
+# FIXME: Don't build for Python 2.6 instead of skipping the test
+@unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")
 class SESTests(unittest2.TestCase):
     @classmethod
     def setup_bucket_policy(cls):
