@@ -1,5 +1,8 @@
 from __future__ import print_function, absolute_import, division
 
+import boto3
+import json
+import random
 import subprocess
 import time
 import unittest2
@@ -9,13 +12,56 @@ from aws_certificate_management.ses import (
 
 
 class SESTests(unittest2.TestCase):
+    @classmethod
+    def setup_bucket_policy(cls):
+        sts_client = boto3.client('sts')
+        account_id = sts_client.get_caller_identity()['Account']
+        policy_document = {
+            "Version": "2008-10-17",
+            "Statement": [
+                {
+                    "Sid": "GiveSESPermissionToWriteEmail",
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ses.amazonaws.com"
+                    },
+                    "Action": "s3:PutObject",
+                    "Resource": "arn:aws:s3:::{0}/*".format(cls.s3_bucket),
+                    "Condition": {
+                        "StringEquals": {
+                            "aws:Referer": account_id
+                        }
+                    }
+                }
+            ]
+        }
+        s3 = boto3.resource('s3')
+        policy = s3.BucketPolicy(cls.s3_bucket)
+        policy.put(Policy=json.dumps(policy_document))
+
+    @classmethod
+    def setUpClass(cls):
+        cls.s3_client = boto3.client('s3')
+        cls.s3_bucket = "aws-certificate-management-tests"
+        cls.s3_bucket += str(random.randint(0, 2**64))
+
+        cls.s3_client.create_bucket(Bucket=cls.s3_bucket, CreateBucketConfiguration={
+                'LocationConstraint': 'EU'})
+        cls.setup_bucket_policy()
+
+    @classmethod
+    def tearDownClass(cls):
+        for item in cls.s3_client.list_objects(Bucket=cls.s3_bucket).get('Contents', []):
+            cls.s3_client.delete_object(Key=item['Key'], Bucket=cls.s3_bucket)
+
+        cls.s3_client.delete_bucket(Bucket=cls.s3_bucket)
+
     def setUp(self):
         # Calls to "aws ses set-active-receipt-rule-set..." are thottled to
         # one per second.
         time.sleep(1)
 
         self.rule_set_name = "integrationtest_for_aws_certificate_management"
-        self.s3_bucket = "integration-tests-for-aws-certificate-management"
         self.rule = generate_rule("somedomain.invalid", self.s3_bucket)
 
         delete_rule_set(self.rule_set_name)
