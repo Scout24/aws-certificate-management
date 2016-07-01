@@ -9,7 +9,8 @@ import time
 import unittest2
 
 from aws_certificate_management.ses import (
-        delete_rule_set, generate_rule, create_rule_set, get_active_rule_set)
+        delete_rule_set, generate_rule, create_rule_set, get_active_rule_set,
+        REGION)
 
 # FIXME: Don't build for Python 2.6 instead of skipping the test
 @unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")
@@ -74,7 +75,8 @@ class SESTests(unittest2.TestCase):
 
             # This fails if the rule does not actually exist
             subprocess.check_call(["aws", "ses", "describe-receipt-rule-set",
-                                  "--rule-set-name", self.rule_set_name])
+                                  "--rule-set-name", self.rule_set_name,
+                                  REGION])
             self.assertEqual(self.rule_set_name, get_active_rule_set())
         finally:
             delete_rule_set(self.rule_set_name)
@@ -82,7 +84,8 @@ class SESTests(unittest2.TestCase):
         # Since the rule should be deleted now, this should fail:
         self.assertRaises(Exception, subprocess.check_call,
                           ["aws", "ses", "describe-receipt-rule-set",
-                          "--rule-set-name", self.rule_set_name])
+                          "--rule-set-name", self.rule_set_name,
+                          REGION])
 
 
 if __name__ == "__main__":
