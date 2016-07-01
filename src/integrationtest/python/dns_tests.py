@@ -5,7 +5,7 @@ import dns.resolver
 
 
 class DNSTests(unittest2.TestCase):
-    def test_create_ses_dns_records(self):
+    def xx_test_create_ses_dns_records(self):
         create_ses_dns_records("*.pro-test.wolke.is")
 
         answers = dns.resolver.query('pro-test.wolke.is', 'MX')
