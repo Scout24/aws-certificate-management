@@ -46,7 +46,7 @@ def normalize_domain(domain):
 
 def create_ses_dns_records(domain, region='eu-west-1'):
     domain = normalize_domain(domain)
-    ses = boto3.client('ses')
+    ses = boto3.client('ses', region_name=region)
     domain_identity = ses.verify_domain_identity(Domain=domain)
     verification_token = domain_identity['VerificationToken']
     dkim_tokens = ses.verify_domain_dkim(Domain=domain)['DkimTokens']
