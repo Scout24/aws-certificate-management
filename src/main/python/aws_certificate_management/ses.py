@@ -5,6 +5,8 @@ import logging
 import subprocess
 import time
 
+from .configure_dns import normalize_domain
+
 REGION = "--region=eu-west-1"
 
 
@@ -79,8 +81,9 @@ def create_rule_set(rule_set_name, rule):
 
 
 def setup_ses_rule_set(domain, s3_bucket):
-    rule_set_name = "standard_addresses_for_{0}".format(domain)
-    rule = generate_rule(domain, s3_bucket)
+    normalized_domain = normalize_domain(domain)
+    rule_set_name = "standard_addresses_for_{0}".format(normalized_domain)
+    rule = generate_rule(normalized_domain, s3_bucket)
 
     delete_rule_set(rule_set_name)
     create_rule_set(rule_set_name, rule)
