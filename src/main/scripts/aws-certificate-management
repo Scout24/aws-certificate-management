@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+from __future__ import print_function, absolute_import, division
+import argparse
+import logging
+import os
+
+from aws_certificate_management import setup_ses_rule_set, create_ses_dns_records
+
+
+def setup_logging(log_level):
+    log_level = log_level or "INFO"
+    logging.getLogger().setLevel(log_level)
+
+
+def setup_certificate(domain, region='eu-west-1'):
+    mail_bucket_name = create_ses_dns_records(domain, region=region)
+    setup_ses_rule_set(domain, mail_bucket_name)
+
+    request_certificate = "aws acm request-certificate --domain-name '{domain}'"
+    os.system(request_certificate.format(domain=domain))
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Tool to create AWS certificates')
+    parser.add_argument('-v', '--verbose', dest='log_level',
+                        action='store_const', const="DEBUG")
+    parser.add_argument('-q', '--quiet', dest='log_level',
+                        action='store_const', const="WARN")
+    parser.add_argument('--region', dest='region', default='eu-west-1',
+                        help='For which region the certificate is created')
+    parser.add_argument('--domain', dest='domain',
+                        help=('For which domain you need a certificate. '
+                              'Can also be a wildcard like "*.foo.bar"'))
+
+    args = parser.parse_args()
+
+    setup_logging(args.log_level)
+    setup_certificate(args.domain, args.region)
+
+
+if __name__ == "__main__":
+    main()
