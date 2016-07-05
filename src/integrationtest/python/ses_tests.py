@@ -10,7 +10,7 @@ import unittest2
 
 from aws_certificate_management.ses import (
         delete_rule_set, generate_rule, create_rule_set, get_active_rule_set,
-        REGION)
+        REGION, setup_ses_rule_set)
 
 # FIXME: Don't build for Python 2.6 instead of skipping the test
 @unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")
@@ -86,6 +86,12 @@ class SESTests(unittest2.TestCase):
                           ["aws", "ses", "describe-receipt-rule-set",
                           "--rule-set-name", self.rule_set_name,
                           REGION])
+
+    def test_setup_ses_rule_set(self):
+        try:
+            setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
+        finally:
+            delete_rule_set(self.rule_set_name)
 
 
 if __name__ == "__main__":
