@@ -1,5 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
+import logging
 import os
 import re
 from cfn_sphere import StackActionHandler
@@ -61,6 +62,7 @@ def normalize_domain(domain):
 
 
 def create_ses_dns_records(domain, region='eu-west-1'):
+    logging.info("Creating DNS records to configure e-mail for your domain")
     domain = normalize_domain(domain)
     ses = boto3.client('ses', region_name=region)
     domain_identity = ses.verify_domain_identity(Domain=domain)
@@ -68,9 +70,15 @@ def create_ses_dns_records(domain, region='eu-west-1'):
     dkim_tokens = ses.verify_domain_dkim(Domain=domain)['DkimTokens']
 
     stack_handler = get_stack_action_handler(domain, region, verification_token, dkim_tokens)
+    logging.info("Creating CFN stacks %s and %s",
+                 get_dns_stack_name(domain), get_bucket_stack_name(domain))
     stack_handler.create_or_update_stacks()
 
-    return stack_handler.cfn.get_stack_outputs()[get_bucket_stack_name(domain)]['bucketName']
+    stack_outputs = stack_handler.cfn.get_stack_outputs()
+    s3_bucket_for_mail = stack_outputs[get_bucket_stack_name(domain)]['bucketName']
+    logging.info("Mail for postmaster@<yourdomain> is delivered to "
+                 "S3 bucket %s", s3_bucket_for_mail)
+    return s3_bucket_for_mail
 
 
 def delete_ses_dns_records(domain, region='eu-west-1'):
