@@ -13,8 +13,9 @@ from aws_certificate_management.ses import (
         REGION, setup_ses_rule_set)
 from aws_certificate_management.configure_dns import delete_items_in_bucket
 
+
 # FIXME: Don't build for Python 2.6 instead of skipping the test
-@unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")
+@unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")  # NOQA
 class SESTests(unittest2.TestCase):
     @classmethod
     def setup_bucket_policy(cls):
@@ -49,8 +50,9 @@ class SESTests(unittest2.TestCase):
         cls.s3_bucket = "aws-certificate-management-tests"
         cls.s3_bucket += str(random.randint(0, 2**64))
 
-        cls.s3_client.create_bucket(Bucket=cls.s3_bucket, CreateBucketConfiguration={
-                'LocationConstraint': 'EU'})
+        cls.s3_client.create_bucket(
+            Bucket=cls.s3_bucket,
+            CreateBucketConfiguration={'LocationConstraint': 'EU'})
         cls.setup_bucket_policy()
 
     @classmethod
@@ -74,8 +76,8 @@ class SESTests(unittest2.TestCase):
 
             # This fails if the rule does not actually exist
             subprocess.check_call(["aws", "ses", "describe-receipt-rule-set",
-                                  "--rule-set-name", self.rule_set_name,
-                                  REGION])
+                                   "--rule-set-name", self.rule_set_name,
+                                   REGION])
             self.assertEqual(self.rule_set_name, get_active_rule_set())
         finally:
             delete_rule_set(self.rule_set_name)
@@ -83,8 +85,8 @@ class SESTests(unittest2.TestCase):
         # Since the rule should be deleted now, this should fail:
         self.assertRaises(Exception, subprocess.check_call,
                           ["aws", "ses", "describe-receipt-rule-set",
-                          "--rule-set-name", self.rule_set_name,
-                          REGION])
+                           "--rule-set-name", self.rule_set_name,
+                           REGION])
 
     def test_setup_ses_rule_set(self):
         try:
@@ -95,4 +97,3 @@ class SESTests(unittest2.TestCase):
 
 if __name__ == "__main__":
     unittest2.main()
-
