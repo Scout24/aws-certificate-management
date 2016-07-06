@@ -14,7 +14,7 @@ env:
   PYTHONIOENCODING=UTF-8
 
 script:
-    - pyb -v
+    - pyb -X analyze
 
 after_success:
   - coveralls --verbose
