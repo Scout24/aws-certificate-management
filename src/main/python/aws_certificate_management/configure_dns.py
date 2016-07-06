@@ -81,6 +81,21 @@ def create_ses_dns_records(domain, region='eu-west-1'):
     return s3_bucket_for_mail
 
 
+def delete_items_in_bucket(s3_bucket):
+    s3_client = boto3.client('s3')
+    for item in s3_client.list_objects(Bucket=s3_bucket).get('Contents', []):
+        s3_client.delete_object(Key=item['Key'], Bucket=s3_bucket)
+
 def delete_ses_dns_records(domain, region='eu-west-1'):
+    logging.info("Deleting DNS records that configure e-mail for your domain")
     domain = normalize_domain(domain)
-    get_stack_action_handler(domain, region).delete_stacks()
+    stack_handler = get_stack_action_handler(domain, region)
+
+    stacks_dict = stack_handler.cfn.get_stack_outputs()
+    bucket_stack_outputs = stacks_dict[get_bucket_stack_name(domain)]
+    bucket_name = bucket_stack_outputs['bucketName']
+    logging.info("Deleting all items in S3 bucket %r to prepare stack deletion", bucket_name)
+    delete_items_in_bucket(bucket_name)
+
+    stack_handler.delete_stacks()
+    logging.info("Deletion of DNS records complete")

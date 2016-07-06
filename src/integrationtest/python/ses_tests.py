@@ -11,6 +11,7 @@ import unittest2
 from aws_certificate_management.ses import (
         delete_rule_set, generate_rule, create_rule_set, get_active_rule_set,
         REGION, setup_ses_rule_set)
+from aws_certificate_management.configure_dns import delete_items_in_bucket
 
 # FIXME: Don't build for Python 2.6 instead of skipping the test
 @unittest2.skipIf(sys.version_info < (2,7), "Python 2.6 has no check_output")
@@ -54,9 +55,7 @@ class SESTests(unittest2.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for item in cls.s3_client.list_objects(Bucket=cls.s3_bucket).get('Contents', []):
-            cls.s3_client.delete_object(Key=item['Key'], Bucket=cls.s3_bucket)
-
+        delete_items_in_bucket(cls.s3_bucket)
         cls.s3_client.delete_bucket(Bucket=cls.s3_bucket)
 
     def setUp(self):
