@@ -86,6 +86,7 @@ def delete_items_in_bucket(s3_bucket):
     for item in s3_client.list_objects(Bucket=s3_bucket).get('Contents', []):
         s3_client.delete_object(Key=item['Key'], Bucket=s3_bucket)
 
+
 def delete_ses_dns_records(domain, region='eu-west-1'):
     logging.info("Deleting DNS records that configure e-mail for your domain")
     domain = normalize_domain(domain)
