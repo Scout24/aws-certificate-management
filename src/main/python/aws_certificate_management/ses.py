@@ -7,6 +7,7 @@ import time
 
 from .configure_dns import normalize_domain
 
+LOGGER = logging.getLogger("aws-certificate-management")
 REGION = "--region=eu-west-1"
 
 
@@ -15,7 +16,7 @@ def run(command):
     # region is configured. We need to explicitly name it in every command.
     command.append(REGION)
 
-    logging.debug("Running this command: %r", command)
+    LOGGER.debug("Running this command: %r", command)
     subprocess.check_call(command)
 
 
@@ -97,5 +98,5 @@ def setup_ses_rule_set(domain, s3_bucket):
 def cleanup_ses_rule_set(domain):
     rule_set_name = get_rule_set_name(domain)
     delete_rule_set(rule_set_name)
-    logging.info("Deletion of SES mail rule finished")
-    logging.warn("Check if you need to set an active rule in SES!")
+    LOGGER.info("Deletion of SES mail rule finished")
+    LOGGER.warn("Check if you need to set an active rule in SES!")

@@ -11,7 +11,8 @@ from aws_certificate_management import \
 
 def setup_logging(log_level):
     log_level = log_level or "INFO"
-    logging.getLogger().setLevel(log_level)
+    logging.getLogger('aws-certificate-management').setLevel(log_level)
+    logging.getLogger('cfn_sphere').setLevel(log_level)
 
 
 def setup_certificate(domain, region):
