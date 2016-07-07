@@ -97,3 +97,5 @@ def setup_ses_rule_set(domain, s3_bucket):
 def cleanup_ses_rule_set(domain):
     rule_set_name = get_rule_set_name(domain)
     delete_rule_set(rule_set_name)
+    logging.info("Deletion of SES mail rule finished")
+    logging.info("Check if you need to set an active rule!")
