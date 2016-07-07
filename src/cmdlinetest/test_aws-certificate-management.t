@@ -23,10 +23,10 @@
 Missing "domain" parameter
   $ aws-certificate-management --cleanup
   usage: aws-certificate-management [-h] [-v] [-q] [--region REGION] [-c] domain
-  aws-certificate-management: error: too few arguments
+  aws-certificate-management: error: .* (re)
   [2]
 
   $ aws-certificate-management
   usage: aws-certificate-management [-h] [-v] [-q] [--region REGION] [-c] domain
-  aws-certificate-management: error: too few arguments
+  aws-certificate-management: error: .* (re)
   [2]
