@@ -44,4 +44,7 @@ def set_properties_for_teamcity_builds(project):
     project.set_property('copy_resources_target', '$dir_dist')
     project.get_property('copy_resources_glob').extend(['setup.cfg'])
     project.get_property('filter_resources_glob').extend(['**/setup.cfg'])
+    # to set ENV variable for the next step(s) - snakepit
+    # used by metarunner: Build and Upload RPM Packages with snakepit and rpmbuild
+    print "##teamcity[setParameter name='env.pyb_project_version' value='%s']" % (project.version)
 
