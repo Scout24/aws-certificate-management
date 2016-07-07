@@ -14,7 +14,7 @@ env:
   PYTHONIOENCODING=UTF-8
 
 script:
-    - pyb -X analyze
+    - pyb -X analyze package run_cram_tests
 
 after_success:
   - coveralls --verbose
