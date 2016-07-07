@@ -9,6 +9,7 @@ use_plugin("python.distutils")
 use_plugin('copy_resources')
 use_plugin("filter_resources")
 use_plugin('python.integrationtest')
+use_plugin('python.cram')
 
 name = "aws-certificate-management"
 default_task = ["clean", "analyze", "publish"]
