@@ -58,6 +58,8 @@ def get_stack_action_handler(domain, region, verification_token=None, dkim_token
 def normalize_domain(domain):
     if domain.startswith("*."):
         return domain[2:]
+    elif domain.startswith("www."):
+        return domain[4:]
     return domain
 
 
@@ -76,7 +78,7 @@ def create_ses_dns_records(domain, region='eu-west-1'):
 
     stack_outputs = stack_handler.cfn.get_stack_outputs()
     s3_bucket_for_mail = stack_outputs[get_bucket_stack_name(domain)]['bucketName']
-    logging.info("Mail for postmaster@<yourdomain> is delivered to "
+    logging.info("Mail for postmaster@<yourdomain> will be delivered to "
                  "S3 bucket %s", s3_bucket_for_mail)
     return s3_bucket_for_mail
 

@@ -5,7 +5,7 @@ import dns.resolver
 
 
 class DNSTests(unittest2.TestCase):
-    def test_create_ses_dns_records(self):
+    def test_create_ses_dns_records_wildcard(self):
         try:
             create_ses_dns_records("*.pro-test.wolke.is")
 
@@ -13,6 +13,15 @@ class DNSTests(unittest2.TestCase):
             self.assertEqual(str(answers[0]), "10 inbound-smtp.eu-west-1.amazonaws.com.")
         finally:
             delete_ses_dns_records("*.pro-test.wolke.is")
+
+    def test_create_ses_dns_records_for_www(self):
+        try:
+            create_ses_dns_records("www.pro-test.wolke.is")
+
+            answers = dns.resolver.query('pro-test.wolke.is', 'MX')
+            self.assertEqual(str(answers[0]), "10 inbound-smtp.eu-west-1.amazonaws.com.")
+        finally:
+            delete_ses_dns_records("www.pro-test.wolke.is")
 
 
 if __name__ == "__main__":

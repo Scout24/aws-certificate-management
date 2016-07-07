@@ -17,5 +17,8 @@ class DNSTests(unittest2.TestCase):
     def test_normalize_domain_wildcard(self):
         self.assertEqual(normalize_domain("*.foo.bar"), "foo.bar")
 
+    def test_normalize_domain_www(self):
+        self.assertEqual(normalize_domain("www.foo.bar"), "foo.bar")
+
     def test_normalize_domain_no_wildcard(self):
         self.assertEqual(normalize_domain("foo.bar"), "foo.bar")
