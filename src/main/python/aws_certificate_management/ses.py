@@ -80,10 +80,20 @@ def create_rule_set(rule_set_name, rule):
          '--rule-set-name', rule_set_name])
 
 
+def get_rule_set_name(domain):
+    normalized_domain = normalize_domain(domain)
+    return "standard_addresses_for_{0}".format(normalized_domain)
+
+
 def setup_ses_rule_set(domain, s3_bucket):
     normalized_domain = normalize_domain(domain)
-    rule_set_name = "standard_addresses_for_{0}".format(normalized_domain)
     rule = generate_rule(normalized_domain, s3_bucket)
+    rule_set_name = get_rule_set_name(domain)
 
     delete_rule_set(rule_set_name)
     create_rule_set(rule_set_name, rule)
+
+
+def cleanup_ses_rule_set(domain):
+    rule_set_name = get_rule_set_name(domain)
+    delete_rule_set(rule_set_name)

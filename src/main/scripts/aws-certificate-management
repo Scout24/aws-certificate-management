@@ -4,7 +4,9 @@ import argparse
 import logging
 import os
 
-from aws_certificate_management import setup_ses_rule_set, create_ses_dns_records, delete_ses_dns_records_and_bucket
+from aws_certificate_management import \
+    setup_ses_rule_set, cleanup_ses_rule_set, \
+    create_ses_dns_records, delete_ses_dns_records_and_bucket
 
 
 def setup_logging(log_level):
@@ -25,6 +27,7 @@ def cleanup(domain, region):
         logging.error('cleanup option needs: domain option too! Abort!')
     else:
         delete_ses_dns_records_and_bucket(domain, region)
+        cleanup_ses_rule_set(domain)
 
 
 def main():

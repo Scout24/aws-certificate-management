@@ -14,3 +14,7 @@ It uses cloudformation (cfn-sphere) and the AWS Certificate Manager.
 
 Project is in the early stage of development ...
 
+Side Effects
+------------
+
+This script will deactivate the active rule set in SES! You have to activate your old rule set by hand, if needed.
