@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import, division
 import argparse
 import logging
 import os
+import sys
 
 from aws_certificate_management import \
     setup_ses_rule_set, cleanup_ses_rule_set, \
@@ -25,6 +26,7 @@ def setup_certificate(domain, region):
 def cleanup(domain, region):
     if domain is None:
         logging.error('cleanup option needs: domain option too! Abort!')
+        sys.exit(1)
     else:
         delete_ses_dns_records_and_bucket(domain)
         cleanup_ses_rule_set(domain)
@@ -43,14 +45,14 @@ def main():
     parser.add_argument('--domain', dest='domain',
                         help=('For which domain you need a certificate. '
                               'Can also be a wildcard like "*.foo.bar"'))
-    # Cleanup stacks and ressources which are only needed to request the certificate
-    parser.add_argument('-c', '--cleanup', dest='cleanup',
-                        action='store_const', const="True")
+    parser.add_argument('-c', '--cleanup', dest='cleanup', action='store_true',
+                        help=('Clean up stacks and resources that are only '
+                              'needed to request the certificate'))
 
     args = parser.parse_args()
 
     setup_logging(args.log_level)
-    if args.cleanup is not None:
+    if args.cleanup:
         cleanup(args.domain, args.region)
     else:
         setup_certificate(args.domain, args.region)
