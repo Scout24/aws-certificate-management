@@ -15,18 +15,18 @@ def setup_logging(log_level):
 
 
 def setup_certificate(domain, region):
-    mail_bucket_name = create_ses_dns_records(domain, region=region)
+    mail_bucket_name = create_ses_dns_records(domain)
     setup_ses_rule_set(domain, mail_bucket_name)
 
-    request_certificate = "aws acm request-certificate --domain-name '{domain}'"
-    os.system(request_certificate.format(domain=domain))
+    request_certificate = "aws acm request-certificate --domain-name '{domain}' --region='{region}'"
+    os.system(request_certificate.format(domain=domain, region=region))
 
 
 def cleanup(domain, region):
     if domain is None:
         logging.error('cleanup option needs: domain option too! Abort!')
     else:
-        delete_ses_dns_records_and_bucket(domain, region)
+        delete_ses_dns_records_and_bucket(domain)
         cleanup_ses_rule_set(domain)
 
 
