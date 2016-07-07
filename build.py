@@ -26,6 +26,8 @@ def set_properties(project):
 
     project.set_property('integrationtest_inherit_environment', True)
     project.set_property('integrationtest_always_verbose', True)
+    project.set_property('copy_resources_target', '$dir_dist')
+    project.get_property('copy_resources_glob').extend(['setup.cfg'])
 
     # FIXME
     project.set_property("coverage_break_build", False)
@@ -41,10 +43,8 @@ def set_properties_for_teamcity_builds(project):
     project.set_property('install_dependencies_index_url',
                          os.environ.get('PYPIPROXY_URL'))
     project.rpm_release = os.environ.get('RPM_RELEASE', 0)
-    project.set_property('copy_resources_target', '$dir_dist')
-    project.get_property('copy_resources_glob').extend(['setup.cfg'])
-    project.get_property('filter_resources_glob').extend(['**/setup.cfg'])
+
     # to set ENV variable for the next step(s) - snakepit
     # used by metarunner: Build and Upload RPM Packages with snakepit and rpmbuild
-    print "##teamcity[setParameter name='env.pyb_project_version' value='%s']" % (project.version)
+    print("##teamcity[setParameter name='env.pyb_project_version' value='{}']".format(project.version))
 
