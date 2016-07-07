@@ -4,7 +4,7 @@ import argparse
 import logging
 import os
 
-from aws_certificate_management import setup_ses_rule_set, create_ses_dns_records
+from aws_certificate_management import setup_ses_rule_set, create_ses_dns_records, delete_ses_dns_records_and_bucket
 
 
 def setup_logging(log_level):
@@ -12,12 +12,19 @@ def setup_logging(log_level):
     logging.getLogger().setLevel(log_level)
 
 
-def setup_certificate(domain, region='eu-west-1'):
+def setup_certificate(domain, region):
     mail_bucket_name = create_ses_dns_records(domain, region=region)
     setup_ses_rule_set(domain, mail_bucket_name)
 
     request_certificate = "aws acm request-certificate --domain-name '{domain}'"
     os.system(request_certificate.format(domain=domain))
+
+
+def cleanup(domain, region):
+    if domain is None:
+        logging.error('cleanup option needs: domain option too! Abort!')
+    else:
+        delete_ses_dns_records_and_bucket(domain, region)
 
 
 def main():
@@ -28,15 +35,22 @@ def main():
     parser.add_argument('-q', '--quiet', dest='log_level',
                         action='store_const', const="WARN")
     parser.add_argument('--region', dest='region', default='eu-west-1',
-                        help='For which region the certificate is created')
+                        help='For which region the certificate is created '
+                             '(default is eu-west-1)')
     parser.add_argument('--domain', dest='domain',
                         help=('For which domain you need a certificate. '
                               'Can also be a wildcard like "*.foo.bar"'))
+    # Cleanup stacks and ressources which are only needed to request the certificate
+    parser.add_argument('-c', '--cleanup', dest='cleanup',
+                        action='store_const', const="True")
 
     args = parser.parse_args()
 
     setup_logging(args.log_level)
-    setup_certificate(args.domain, args.region)
+    if args.cleanup is not None:
+        cleanup(args.domain, args.region)
+    else:
+        setup_certificate(args.domain, args.region)
 
 
 if __name__ == "__main__":

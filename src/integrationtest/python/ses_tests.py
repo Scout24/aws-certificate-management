@@ -92,6 +92,7 @@ class SESTests(unittest2.TestCase):
         try:
             setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
         finally:
+            # FIXME: warum ?
             delete_rule_set(self.rule_set_name)
 
 
