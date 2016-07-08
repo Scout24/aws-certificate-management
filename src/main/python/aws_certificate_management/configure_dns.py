@@ -1,17 +1,27 @@
 from __future__ import print_function, absolute_import, division
 
 import logging
-import os
 import re
+from tempfile import NamedTemporaryFile
+
+import boto3
 from cfn_sphere import StackActionHandler
 from cfn_sphere.stack_configuration import Config
 
-import boto3
+from .stack_templates import RECORDSET_STACK, SES_EMAIL_BUCKET_STACK
 
 LOGGER = logging.getLogger("aws-certificate-management")
 DNS_STACK_NAME_POSTFIX = "-ses-dns-records"
 BUCKET_STACK_NAME_POSTFIX = "-email-bucket"
 REGION = "eu-west-1"
+
+# These files will be closed (and deleted) when Python terminates.
+recordset_template = NamedTemporaryFile(suffix=".json")
+ses_template = NamedTemporaryFile(suffix=".json")
+recordset_template.write(RECORDSET_STACK)
+recordset_template.flush()
+ses_template.write(SES_EMAIL_BUCKET_STACK)
+ses_template.flush()
 
 
 def prepare_domain(domain):
@@ -29,19 +39,14 @@ def get_bucket_stack_name(domain):
 
 
 def get_stack_action_handler(domain, verification_token=None, dkim_tokens=None):
-    ses_dns_template = "{0}/../../../../src/main/cfn/templates/recordset.json"
-    ses_dns_template = ses_dns_template.format(os.path.abspath(os.path.dirname(__file__)))
     verification_token = verification_token or ""
     dkim_tokens = dkim_tokens or ["", "", ""]
-
-    mail_bucket_template = "{0}/../../../../src/main/cfn/templates/ses-email-receiving-bucket.json"
-    mail_bucket_template = mail_bucket_template.format(os.path.abspath(os.path.dirname(__file__)))
 
     return StackActionHandler(config=Config(config_dict={
         'region': REGION,
         'stacks': {
             get_dns_stack_name(domain): {
-                'template-url': ses_dns_template,
+                'template-url': recordset_template.name,
                 'parameters': {
                     'dnsBaseName': domain + ".",
                     'dkimOne': dkim_tokens[0],
@@ -51,7 +56,7 @@ def get_stack_action_handler(domain, verification_token=None, dkim_tokens=None):
                 }
             },
             get_bucket_stack_name(domain): {
-                'template-url': mail_bucket_template,
+                'template-url': ses_template.name,
             }
         }
     }))
@@ -99,7 +104,8 @@ def delete_ses_dns_records_and_bucket(domain):
     stacks_dict = stack_handler.cfn.get_stack_outputs()
     bucket_stack_outputs = stacks_dict[get_bucket_stack_name(domain)]
     bucket_name = bucket_stack_outputs['bucketName']
-    LOGGER.info("Deleting all items in S3 bucket %r to prepare stack deletion", bucket_name)
+    LOGGER.info("Deleting all items in S3 bucket %r to prepare stack deletion",
+                bucket_name)
     delete_items_in_bucket(bucket_name)
 
     stack_handler.delete_stacks()

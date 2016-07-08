@@ -27,11 +27,8 @@ def set_properties(project):
     project.set_property('integrationtest_inherit_environment', True)
     project.set_property('integrationtest_always_verbose', True)
 
-    project.install_file('/usr/share/aws_certificate_management', 'src/main/cfn/templates/recordset.json')
-    project.install_file('/usr/share/aws_certificate_management', 'src/main/cfn/templates/ses-email-receiving-bucket.json')
-
     project.set_property('copy_resources_target', '$dir_dist')
-    project.get_property('copy_resources_glob').extend(['setup.cfg', 'src/main/cfn/templates/recordset.json', 'src/main/cfn/templates/ses-email-receiving-bucket.json'])
+    project.get_property('copy_resources_glob').extend(['setup.cfg'])
 
     # FIXME
     project.set_property("coverage_break_build", False)
