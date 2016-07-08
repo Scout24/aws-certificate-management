@@ -1,4 +1,4 @@
-RECORDSET_STACK = r"""
+RECORDSET_STACK = br"""
 {
   "Description": "Route53 record sets to use SES to receive mail for a domain",
   "Parameters": {
@@ -215,7 +215,7 @@ RECORDSET_STACK = r"""
 }
 """
 
-SES_EMAIL_BUCKET_STACK = """
+SES_EMAIL_BUCKET_STACK = b"""
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Destination bucket for emails received by SES",
