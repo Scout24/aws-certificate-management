@@ -26,6 +26,10 @@ def set_properties(project):
 
     project.set_property('integrationtest_inherit_environment', True)
     project.set_property('integrationtest_always_verbose', True)
+
+    project.include_file('aws_certificate_management', 'src/main/cfn/templates/recordset.json')
+    project.include_file('aws_certificate_management', 'src/main/cfn/templates/ses-email-receiving-bucket.json')
+
     project.set_property('copy_resources_target', '$dir_dist')
     project.get_property('copy_resources_glob').extend(['setup.cfg'])
 
