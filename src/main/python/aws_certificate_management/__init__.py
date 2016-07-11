@@ -1,6 +1,7 @@
 from __future__ import print_function, absolute_import, division
 
-import os
+import boto3
+import logging
 
 from .ses import setup_ses_rule_set, cleanup_ses_rule_set
 from .configure_dns import create_ses_dns_records
@@ -16,8 +17,11 @@ def setup_certificate(domain, region):
     mail_bucket_name = create_ses_dns_records(domain)
     setup_ses_rule_set(domain, mail_bucket_name)
 
-    request_certificate = "aws acm request-certificate --domain-name '{domain}' --region='{region}'"
-    os.system(request_certificate.format(domain=domain, region=region))
+    client = boto3.client('acm', region_name=region)
+    response = client.request_certificate(DomainName=domain)
+    certificate_arn = response['CertificateArn']
+    logging.getLogger('aws-certificate-management').info(
+        "Your certificate ARN is %r", certificate_arn)
 
 
 def cleanup(domain):
