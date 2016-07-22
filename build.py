@@ -1,4 +1,5 @@
 from pybuilder.core import use_plugin, init
+from pybuilder.vcs import VCSRevision
 
 use_plugin("python.core")
 use_plugin("python.unittest")
@@ -12,6 +13,7 @@ use_plugin('python.integrationtest')
 use_plugin('python.cram')
 
 name = "aws-certificate-management"
+version = VCSRevision().get_git_revision_count()
 description = "Tool to automate certificate creation in AWS"
 default_task = ["clean", "analyze", "publish"]
 url = "https://github.com/ImmobilienScout24/aws-certificate-management"
