@@ -12,7 +12,10 @@ use_plugin('python.integrationtest')
 use_plugin('python.cram')
 
 name = "aws-certificate-management"
+description = "Tool to automate certificate creation in AWS"
 default_task = ["clean", "analyze", "publish"]
+url = "https://github.com/ImmobilienScout24/aws-certificate-management"
+
 
 
 @init

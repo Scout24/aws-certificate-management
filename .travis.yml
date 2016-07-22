@@ -6,6 +6,9 @@ python:
   - "3.5"
   - "pypy"
 
+before_install:
+- git fetch --unshallow
+
 install:
   - travis_retry pip install pybuilder coveralls
   - travis_retry pyb install_dependencies
@@ -19,3 +22,17 @@ script:
 after_success:
   - coveralls --verbose
 
+before_deploy:
+- pyb -v -X package
+
+deploy:
+  provider: pypi
+  user: Immobilienscout24
+  distributions: sdist
+  skip_cleanup: true
+  password:
+    secure: W1PjF1sbEJocc9Ekjkn8haqU7E7hUbMPoZ3f1f7a8tQfu93lavUk9pb4fZyhuWzHoC58dD1C7670h3o4w32OmLH5qY+uSxDrVymDdJRnquRt3ibdz07JS2315ny/5Y9tVOC/5/SgPCjisIyUVsXZ59SRcNakLjfIUUAZcxeRrSc8RocbleBEzyLvCa+FwbLGMc/A+busUyFuX8fs5NdOq6TLluW3jn5ofAcj5KixRRKyhgQWrD8IYX3RpJjpUepKhHSCOrDGl8TiL77LZq/JN5dc/83n2zuhGy2NPoh/vTpZFcoIZvi6Z0wbwYMGLtfIfPwfzEv4XlKw7LlmkbHZ88Yiww9zRWxhWnwo2tQevRPlPQ/QM/lZBQVJVFV3bLPMWzrd0yEt+sxiOU75/cHEAIorzIC9zOemOIogC/hbipsphJbML4SIoz/EhFvjCjE7YliD9aLQuss16YWouCTa8iQATY/2NG45FDdUZbZEcgAWbEyaj3Z6HluA6ynEaH3NEs9ECyqHKdwTm2Nc8vYVsUIn62cxXh5GTQXiXMimAOKpcLrrXsOhmfUPKA8CYKMvRmFPLxG4gUnYaMVNYxfg3rvksT7YbkAqrlr46R8oZ4K3KLZEFRA7QZUXphwHcNp8wku9q0GR7SiygARyi4Gf6dT9Nh5HCMp987feKpq4g7U=
+  on:
+    repo: ImmobilienScout24/aws-certificate-management
+    python: '2.7'
+branch: master
