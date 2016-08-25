@@ -83,7 +83,7 @@ def create_rule_set(rule_set_name, rule):
 
 def get_rule_set_name(domain):
     normalized_domain = normalize_domain(domain)
-    return "standard_addresses_for_{0}".format(normalized_domain)
+    return "tmp_acm_{0}".format(normalized_domain)[:64]
 
 
 def setup_ses_rule_set(domain, s3_bucket):
