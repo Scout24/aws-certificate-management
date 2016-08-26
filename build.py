@@ -23,7 +23,7 @@ url = "https://github.com/ImmobilienScout24/aws-certificate-management"
 @init
 def set_properties(project):
     project.depends_on("awscli")
-    project.depends_on("cfn-sphere")
+    project.depends_on("cfn-sphere <= 0.1.30")
     project.depends_on("boto3")
     project.build_depends_on("dnspython")
     project.build_depends_on("unittest2")
