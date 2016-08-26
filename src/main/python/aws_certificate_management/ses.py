@@ -4,6 +4,7 @@ import json
 import logging
 import subprocess
 import time
+import hashlib
 
 from .configure_dns import normalize_domain
 
@@ -82,8 +83,8 @@ def create_rule_set(rule_set_name, rule):
 
 
 def get_rule_set_name(domain):
-    normalized_domain = normalize_domain(domain)
-    return "standard_addresses_for_{0}".format(normalized_domain)
+    normalized_domain = normalize_domain(domain).encode('utf-8')
+    return "tmp_rule_acm_{0}".format(hashlib.md5(normalized_domain).hexdigest())
 
 
 def setup_ses_rule_set(domain, s3_bucket):
