@@ -83,7 +83,7 @@ def create_ses_dns_records(domain):
                 get_dns_stack_name(domain), get_bucket_stack_name(domain))
     stack_handler.create_or_update_stacks()
 
-    stack_outputs = stack_handler.cfn.get_stack_outputs()
+    stack_outputs = stack_handler.cfn.get_stacks_outputs()
     s3_bucket_for_mail = stack_outputs[get_bucket_stack_name(domain)]['bucketName']
     LOGGER.info("Mail for postmaster@<yourdomain> will be delivered to "
                 "S3 bucket %s", s3_bucket_for_mail)
@@ -101,7 +101,7 @@ def delete_ses_dns_records_and_bucket(domain):
     domain = normalize_domain(domain)
     stack_handler = get_stack_action_handler(domain)
 
-    stacks_dict = stack_handler.cfn.get_stack_outputs()
+    stacks_dict = stack_handler.cfn.get_stacks_outputs()
     bucket_stack_outputs = stacks_dict[get_bucket_stack_name(domain)]
     bucket_name = bucket_stack_outputs['bucketName']
     LOGGER.info("Deleting all items in S3 bucket %r to prepare stack deletion",
