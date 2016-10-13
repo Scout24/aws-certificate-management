@@ -19,7 +19,7 @@ from aws_certificate_management.configure_dns import delete_items_in_bucket
 class SESTests(unittest2.TestCase):
     @classmethod
     def setup_bucket_policy(cls):
-        sts_client = boto3.client('sts')
+        sts_client = boto3.client('sts', region_name='eu-west-1')
         account_id = sts_client.get_caller_identity()['Account']
         policy_document = {
             "Version": "2008-10-17",
@@ -46,7 +46,7 @@ class SESTests(unittest2.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.s3_client = boto3.client('s3')
+        cls.s3_client = boto3.client('s3', region_name='eu-west-1')
         cls.s3_bucket = "aws-certificate-management-tests"
         cls.s3_bucket += str(random.randint(0, 2**64))
 

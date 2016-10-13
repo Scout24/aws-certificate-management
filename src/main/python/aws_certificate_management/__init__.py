@@ -13,8 +13,8 @@ __all__ = ["setup_ses_rule_set", "create_ses_dns_records",
            "setup_certificate", "cleanup"]
 
 
-def setup_certificate(domain, region):
-    mail_bucket_name = create_ses_dns_records(domain)
+def setup_certificate(domain, hosted_zone, region):
+    mail_bucket_name = create_ses_dns_records(domain, hosted_zone)
     setup_ses_rule_set(domain, mail_bucket_name)
 
     client = boto3.client('acm', region_name=region)
@@ -24,6 +24,6 @@ def setup_certificate(domain, region):
         "Your certificate ARN is %r", certificate_arn)
 
 
-def cleanup(domain):
-    delete_ses_dns_records_and_bucket(domain)
+def cleanup(domain, hosted_zone):
+    delete_ses_dns_records_and_bucket(domain, hosted_zone)
     cleanup_ses_rule_set(domain)

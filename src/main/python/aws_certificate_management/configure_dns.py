@@ -38,7 +38,7 @@ def get_bucket_stack_name(domain):
     return prepare_domain(domain) + BUCKET_STACK_NAME_POSTFIX
 
 
-def get_stack_action_handler(domain, verification_token=None, dkim_tokens=None):
+def get_stack_action_handler(domain, hosted_zone, verification_token=None, dkim_tokens=None):
     verification_token = verification_token or ""
     dkim_tokens = dkim_tokens or ["", "", ""]
 
@@ -49,6 +49,7 @@ def get_stack_action_handler(domain, verification_token=None, dkim_tokens=None):
                 'template-url': recordset_template.name,
                 'parameters': {
                     'dnsBaseName': domain + ".",
+                    'targetHostedZoneName': hosted_zone,
                     'dkimOne': dkim_tokens[0],
                     'dkimTwo': dkim_tokens[1],
                     'dkimThree': dkim_tokens[2],
@@ -70,15 +71,24 @@ def normalize_domain(domain):
     return domain
 
 
-def create_ses_dns_records(domain):
+def normalize_hosted_zone(hosted_zone):
+    if hosted_zone.startswith("*."):
+        hosted_zone = hosted_zone[2:]
+    elif hosted_zone.startswith("www."):
+        hosted_zone = hosted_zone[4:]
+    return hosted_zone if hosted_zone.endswith(".") else hosted_zone + "."
+
+
+def create_ses_dns_records(domain, hosted_zone):
     LOGGER.info("Creating DNS records to configure e-mail for your domain")
     domain = normalize_domain(domain)
+    hosted_zone = normalize_hosted_zone(hosted_zone)
     ses = boto3.client('ses', region_name=REGION)
     domain_identity = ses.verify_domain_identity(Domain=domain)
     verification_token = domain_identity['VerificationToken']
     dkim_tokens = ses.verify_domain_dkim(Domain=domain)['DkimTokens']
 
-    stack_handler = get_stack_action_handler(domain, verification_token, dkim_tokens)
+    stack_handler = get_stack_action_handler(domain, hosted_zone, verification_token, dkim_tokens)
     LOGGER.info("Creating CFN stacks %s and %s",
                 get_dns_stack_name(domain), get_bucket_stack_name(domain))
     stack_handler.create_or_update_stacks()
@@ -96,10 +106,11 @@ def delete_items_in_bucket(s3_bucket):
         s3_client.delete_object(Key=item['Key'], Bucket=s3_bucket)
 
 
-def delete_ses_dns_records_and_bucket(domain):
+def delete_ses_dns_records_and_bucket(domain, hosted_zone):
     LOGGER.info("Deleting DNS records that configure e-mail for your domain")
     domain = normalize_domain(domain)
-    stack_handler = get_stack_action_handler(domain)
+    hosted_zone = normalize_hosted_zone(hosted_zone)
+    stack_handler = get_stack_action_handler(domain, hosted_zone)
 
     stacks_dict = stack_handler.cfn.get_stacks_outputs()
     bucket_stack_outputs = stacks_dict[get_bucket_stack_name(domain)]
