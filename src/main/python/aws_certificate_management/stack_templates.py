@@ -6,6 +6,10 @@ RECORDSET_STACK = br"""
       "Type": "String",
       "Description": "The name of the domain. You must specify a fully qualified domain name that ends with a period as the last label indication. If you omit the final period, AWS CloudFormation adds it."
     },
+    "targetHostedZoneName": {
+      "Type": "String",
+      "Description": "The name of the hosted zone that holds the domain."
+    },
     "dkimOne": {
       "Type": "String",
       "Description": "sub domain value for '.dkim.amazonses.com.' CNAME record"
@@ -29,7 +33,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "MX",
@@ -45,7 +49,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "CNAME",
@@ -82,7 +86,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "CNAME",
@@ -119,7 +123,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "TXT",
@@ -154,7 +158,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "CNAME",
@@ -178,7 +182,7 @@ RECORDSET_STACK = br"""
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "dnsBaseName"
+          "Ref": "targetHostedZoneName"
         },
         "TTL": "900",
         "Type": "CNAME",

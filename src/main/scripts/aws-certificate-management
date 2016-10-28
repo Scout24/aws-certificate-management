@@ -22,6 +22,8 @@ def main():
     parser.add_argument('--region', dest='region', default='eu-west-1',
                         help='For which region the certificate is created '
                              '(default is eu-west-1)')
+    parser.add_argument('--hosted_zone', dest='hosted_zone',
+                        help='For which hosted zone the domain is registered')
     parser.add_argument('domain',
                         help=('For which domain you need a certificate. '
                               'Can also be a wildcard like "*.foo.bar"'))
@@ -32,10 +34,12 @@ def main():
     args = parser.parse_args()
 
     setup_logging(args.log_level)
+    if args.hosted_zone is None:
+        args.hosted_zone = args.domain
     if args.cleanup:
-        cleanup(args.domain)
+        cleanup(args.domain, args.hosted_zone)
     else:
-        setup_certificate(args.domain, args.region)
+        setup_certificate(args.domain, args.hosted_zone, args.region)
 
 
 if __name__ == "__main__":

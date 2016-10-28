@@ -1,7 +1,7 @@
 import unittest2
 
 from aws_certificate_management.configure_dns import (
-        normalize_domain, get_dns_stack_name, DNS_STACK_NAME_POSTFIX,
+        normalize_domain, normalize_hosted_zone, get_dns_stack_name, DNS_STACK_NAME_POSTFIX,
         get_bucket_stack_name, BUCKET_STACK_NAME_POSTFIX,
         get_stack_action_handler)
 
@@ -24,11 +24,31 @@ class DNSTests(unittest2.TestCase):
     def test_normalize_domain_no_wildcard(self):
         self.assertEqual(normalize_domain("foo.bar"), "foo.bar")
 
+    def test_normalize_hosted_zone_wildcard(self):
+        self.assertEqual(normalize_hosted_zone("*.foo.bar"), "foo.bar.")
+
+    def test_normalize_hosted_zone_www(self):
+        self.assertEqual(normalize_hosted_zone("www.foo.bar"), "foo.bar.")
+
+    def test_normalize_hosted_zone_no_wildcard(self):
+        self.assertEqual(normalize_hosted_zone("foo.bar"), "foo.bar.")
+
+    def test_normalize_hosted_zone_no_dot(self):
+        self.assertEqual(normalize_hosted_zone("foo.bar"), "foo.bar.")
+
     def test_get_stack_action_handler_no_tokens(self):
-        handler = get_stack_action_handler('*.foo.invalid')
+        handler = get_stack_action_handler('*.foo.invalid', '*.foo.invalid.')
+        self.assertIsInstance(handler, object)
+
+    def test_get_stack_action_handler_no_tokens_separate_hz(self):
+        handler = get_stack_action_handler('*.foo.invalid', 'foo.invalid.')
+        self.assertIsInstance(handler, object)
+
+    def test_get_stack_action_handler_no_tokens_different_hz(self):
+        handler = get_stack_action_handler('*.foo.bar.invalid', 'bar.invalid.')
         self.assertIsInstance(handler, object)
 
     def test_get_stack_action_handler_with_tokens(self):
         handler = get_stack_action_handler(
-            '*.foo.invalid', 'verification_token', ['dkim1', 'dkim2', 'dkim3'])
+            '*.foo.invalid', 'foo.invalid.', 'verification_token', ['dkim1', 'dkim2', 'dkim3'])
         self.assertIsInstance(handler, object)
