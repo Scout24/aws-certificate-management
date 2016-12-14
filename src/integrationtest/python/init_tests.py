@@ -1,6 +1,7 @@
 import unittest2
 
-from aws_certificate_management import cleanup, setup_certificate
+from aws_certificate_management import (cleanup, setup_certificate,
+                                        cleanup_ses_rule_set)
 
 WILDCARD_DOMAIN = '*.pro-test.wolke.is'
 WWW_DOMAIN = 'www.pro-test.wolke.is'
@@ -26,6 +27,7 @@ class SetupCertificateTests(unittest2.TestCase):
 
         with self.assertLogs(logger='aws-certificate-management', level='INFO') as cm:
             setup_certificate(self.domain, self.domain, 'eu-west-1')
+            cleanup_ses_rule_set(self.domain)
             setup_certificate(self.domain, self.domain, 'eu-west-1')
 
         logged_messages = "".join(cm.output)
@@ -36,6 +38,7 @@ class SetupCertificateTests(unittest2.TestCase):
 
         with self.assertLogs(logger='aws-certificate-management', level='INFO') as cm:
             setup_certificate(self.domain, self.domain, 'eu-west-1')
+            cleanup_ses_rule_set(self.domain)
             setup_certificate(self.domain, self.domain, 'eu-west-1')
 
         logged_messages = "".join(cm.output)
@@ -46,6 +49,7 @@ class SetupCertificateTests(unittest2.TestCase):
 
         with self.assertLogs(level='INFO') as cm:
             setup_certificate(self.domain, self.domain, 'eu-west-1')
+            cleanup_ses_rule_set(self.domain)
             setup_certificate(self.domain, self.domain, 'eu-central-1')
 
         logged_messages = "".join(cm.output)
