@@ -25,6 +25,7 @@ def set_properties(project):
     project.depends_on("awscli")
     project.depends_on("cfn-sphere")
     project.depends_on("boto3")
+    project.depends_on("pils")
     project.build_depends_on("dnspython")
     project.build_depends_on("unittest2")
     project.build_depends_on("flake8-respect-noqa")

@@ -7,6 +7,7 @@ from tempfile import NamedTemporaryFile
 import boto3
 from cfn_sphere import StackActionHandler
 from cfn_sphere.stack_configuration import Config
+from pils import retry
 
 from .stack_templates import RECORDSET_STACK, SES_EMAIL_BUCKET_STACK
 
@@ -119,5 +120,5 @@ def delete_ses_dns_records_and_bucket(domain, hosted_zone):
                 bucket_name)
     delete_items_in_bucket(bucket_name)
 
-    stack_handler.delete_stacks()
+    retry(delay=10)(stack_handler.delete_stacks)()
     LOGGER.info("Deletion of DNS records and mail bucket complete")
