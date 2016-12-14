@@ -94,6 +94,7 @@ def setup_ses_rule_set(domain, s3_bucket):
 
     delete_rule_set(rule_set_name)
     create_rule_set(rule_set_name, rule)
+    return rule_set_name
 
 
 def cleanup_ses_rule_set(domain):

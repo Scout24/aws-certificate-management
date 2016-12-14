@@ -89,11 +89,8 @@ class SESTests(unittest2.TestCase):
                            REGION])
 
     def test_setup_ses_rule_set(self):
-        try:
-            setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
-        finally:
-            # FIXME: warum ?
-            delete_rule_set(self.rule_set_name)
+        rule_set_name = setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
+        delete_rule_set(rule_set_name)
 
 
 if __name__ == "__main__":
