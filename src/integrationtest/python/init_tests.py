@@ -15,32 +15,38 @@ class SetupCertificateTests(unittest2.TestCase):
         # So just retry before really giving up.
         for attempt in 1, 2, 3:
             try:
-                cleanup(WILDCARD_DOMAIN)
+                cleanup(self.domain, self.domain)
             except Exception:
                 pass
             else:
                 return
 
     def test_setup_certificate_called_twice_wildcard(self):
+        self.domain = WILDCARD_DOMAIN
+
         with self.assertLogs(logger='aws-certificate-management', level='INFO') as cm:
-            setup_certificate(WILDCARD_DOMAIN, WILDCARD_DOMAIN, 'eu-west-1')
-            setup_certificate(WILDCARD_DOMAIN, WILDCARD_DOMAIN, 'eu-west-1')
+            setup_certificate(self.domain, self.domain, 'eu-west-1')
+            setup_certificate(self.domain, self.domain, 'eu-west-1')
 
         logged_messages = "".join(cm.output)
         self.assertIn(ACM_ARN_PREFIX, logged_messages)
 
     def test_setup_certificate_called_twice_www(self):
+        self.domain = WWW_DOMAIN
+
         with self.assertLogs(logger='aws-certificate-management', level='INFO') as cm:
-            setup_certificate(WWW_DOMAIN, WWW_DOMAIN, 'eu-west-1')
-            setup_certificate(WWW_DOMAIN, WWW_DOMAIN, 'eu-west-1')
+            setup_certificate(self.domain, self.domain, 'eu-west-1')
+            setup_certificate(self.domain, self.domain, 'eu-west-1')
 
         logged_messages = "".join(cm.output)
         self.assertIn(ACM_ARN_PREFIX, logged_messages)
 
     def test_setup_certificate_different_regions(self):
+        self.domain = WILDCARD_DOMAIN
+
         with self.assertLogs(level='INFO') as cm:
-            setup_certificate(WILDCARD_DOMAIN, WILDCARD_DOMAIN, 'eu-west-1')
-            setup_certificate(WILDCARD_DOMAIN, WILDCARD_DOMAIN, 'eu-central-1')
+            setup_certificate(self.domain, self.domain, 'eu-west-1')
+            setup_certificate(self.domain, self.domain, 'eu-central-1')
 
         logged_messages = "".join(cm.output)
         self.assertIn(ACM_ARN_PREFIX, logged_messages)
