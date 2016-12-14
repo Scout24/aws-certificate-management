@@ -88,6 +88,11 @@ def get_rule_set_name(domain):
 
 
 def setup_ses_rule_set(domain, s3_bucket):
+    if get_active_rule_set():
+        raise Exception("You already have an active SES Rule Set. To avoid "
+                        "accidentally deactivating productive infrastructure, "
+                        "aws-certificate-management will abort now. Manually "
+                        "deactivate the rule set and run this program again.")
     normalized_domain = normalize_domain(domain)
     rule = generate_rule(normalized_domain, s3_bucket)
     rule_set_name = get_rule_set_name(domain)

@@ -92,6 +92,17 @@ class SESTests(unittest2.TestCase):
         rule_set_name = setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
         delete_rule_set(rule_set_name)
 
+    def test_setup_ses_rule_set_fails_if_existing_rule_set(self):
+        # In order to activate the new rule set, the old rule set would have
+        # to be deactivated. However, this might deactivate some productive
+        # infrastructure. It is better to fail with an informative error
+        # message.
+        rule_set_name = setup_ses_rule_set("*.pro-test.wolke.is", self.s3_bucket)
+        try:
+            self.assertRaises(Exception, setup_ses_rule_set, "*.pro-test.wolke.is", self.s3_bucket)
+        finally:
+            delete_rule_set(rule_set_name)
+
 
 if __name__ == "__main__":
     unittest2.main()
