@@ -7,6 +7,7 @@ WWW_DOMAIN = 'www.pro-test.wolke.is'
 ACM_ARN_PREFIX = 'arn:aws:acm:eu-west-1:'
 ACM_ARN_PREFIX2 = 'arn:aws:acm:eu-central-1:'
 
+
 class SetupCertificateTests(unittest2.TestCase):
     def tearDown(self):
         # Cleanup might run into a race condition, where items are added
@@ -44,9 +45,6 @@ class SetupCertificateTests(unittest2.TestCase):
         logged_messages = "".join(cm.output)
         self.assertIn(ACM_ARN_PREFIX, logged_messages)
         self.assertIn(ACM_ARN_PREFIX2, logged_messages)
-        
-
-
 
 
 if __name__ == "__main__":
