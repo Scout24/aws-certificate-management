@@ -1,5 +1,7 @@
 import unittest2
 
+from pils import retry
+
 from aws_certificate_management import (cleanup, setup_certificate,
                                         cleanup_ses_rule_set)
 
@@ -10,17 +12,12 @@ ACM_ARN_PREFIX2 = 'arn:aws:acm:eu-central-1:'
 
 
 class SetupCertificateTests(unittest2.TestCase):
+    @retry(attempts=3, delay=3)
     def tearDown(self):
         # Cleanup might run into a race condition, where items are added
         # to the bucket just before the bucket-stack should be deleted.
         # So just retry before really giving up.
-        for attempt in 1, 2, 3:
-            try:
-                cleanup(self.domain, self.domain)
-            except Exception:
-                pass
-            else:
-                return
+        cleanup(self.domain, self.domain)
 
     def test_setup_certificate_called_twice_wildcard(self):
         self.domain = WILDCARD_DOMAIN

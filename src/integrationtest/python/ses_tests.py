@@ -8,6 +8,8 @@ import sys
 import time
 import unittest2
 
+from pils import retry
+
 from aws_certificate_management.ses import (
         delete_rule_set, generate_rule, create_rule_set, get_active_rule_set,
         REGION, setup_ses_rule_set)
@@ -56,6 +58,7 @@ class SESTests(unittest2.TestCase):
         cls.setup_bucket_policy()
 
     @classmethod
+    @retry()
     def tearDownClass(cls):
         delete_items_in_bucket(cls.s3_bucket)
         cls.s3_client.delete_bucket(Bucket=cls.s3_bucket)
